@@ -1,7 +1,16 @@
+const telegramMessage =
+  "Привет! Я с сайта v.mesto.tattoo. Хочу узнать подробнее про обучение и ближайший поток ✨";
+
 const LINKS = {
-  booking: "https://t.me/poli_vita",
-  instagram: "https://www.instagram.com/polivitattoo?igsi=MW80eXF4MDV1Z3B6Ng==",
-  studio: "https://www.instagram.com/v.mesto_tattoo?igsi=MXh0MDhiczhuMmkzMg=="
+  booking:
+    "https://t.me/poli_vita?text=" +
+    encodeURIComponent(telegramMessage),
+
+  instagram:
+    "https://www.instagram.com/polivitattoo?igsi=MW80eXF4MDV1Z3B6Ng==",
+
+  studio:
+    "https://www.instagram.com/v.mesto_tattoo?igsi=MXh0MDhiczhuMmkzMg=="
 };
 
 const toast = document.querySelector(".toast");
