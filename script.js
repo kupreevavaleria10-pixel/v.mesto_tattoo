@@ -1,7 +1,7 @@
 const LINKS = {
-  booking: "",   // ссылка на Telegram / WhatsApp для записи
-  guide: "",     // ссылка на программу / гайд
-  instagram: ""  // Instagram студии
+  booking: "https://t.me/poli_vita",
+  instagram: "https://www.instagram.com/polivitattoo?igsi=MW80eXF4MDV1Z3B6Ng==",
+  studio: "https://www.instagram.com/v.mesto_tattoo?igsi=MXh0MDhiczhuMmkzMg=="
 };
 
 const toast = document.querySelector(".toast");
@@ -33,8 +33,8 @@ function bindExternal(selector, url) {
 }
 
 bindExternal(".js-book", LINKS.booking);
-bindExternal(".js-guide", LINKS.guide);
 bindExternal(".js-instagram", LINKS.instagram);
+bindExternal(".js-studio", LINKS.studio);
 
 
 // =========================
@@ -116,12 +116,29 @@ document.querySelectorAll(".faq-item").forEach(item => {
   const button = item.querySelector("button");
 
   button?.addEventListener("click", () => {
-    const open = item.classList.toggle("is-open");
-    const icon = button.querySelector("i");
 
-    if (icon) {
-      icon.textContent = open ? "−" : "+";
+    const opening = !item.classList.contains("is-open");
+
+    document.querySelectorAll(".faq-item").forEach(other => {
+      other.classList.remove("is-open");
+
+      const otherIcon = other.querySelector("button i");
+
+      if (otherIcon) {
+        otherIcon.textContent = "+";
+      }
+    });
+
+    if (opening) {
+      item.classList.add("is-open");
+
+      const icon = button.querySelector("i");
+
+      if (icon) {
+        icon.textContent = "−";
+      }
     }
+
   });
 });
 
@@ -242,11 +259,11 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
     const headerHeight = header?.offsetHeight || 0;
 
-    const targetTop =
-      target.getBoundingClientRect().top +
-      window.scrollY -
-      headerHeight -
-      12;
+const targetTop =
+  target.getBoundingClientRect().top +
+  window.scrollY -
+  headerHeight +
+  4;
 
     window.scrollTo({
       top: targetTop,
@@ -254,3 +271,374 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
     });
   });
 });
+
+
+/* =========================================
+   WORKS CAROUSELS
+========================================= */
+
+document.querySelectorAll("[data-works-slider]").forEach(slider => {
+
+  const cards = [...slider.querySelectorAll(".works-card")];
+
+  const prevBtn = slider.querySelector(".works-prev");
+  const nextBtn = slider.querySelector(".works-next");
+
+  const gallery = slider.closest(".works-gallery");
+  const counter = gallery?.querySelector(".works-current");
+
+  let index = 0;
+
+
+  function renderWorks(){
+
+    cards.forEach(card => {
+      card.classList.remove(
+        "is-active",
+        "is-prev",
+        "is-next"
+      );
+    });
+
+
+    const prevIndex =
+      (index - 1 + cards.length) % cards.length;
+
+    const nextIndex =
+      (index + 1) % cards.length;
+
+
+    cards[index].classList.add("is-active");
+    cards[prevIndex].classList.add("is-prev");
+    cards[nextIndex].classList.add("is-next");
+
+
+    if(counter){
+      counter.textContent =
+        String(index + 1).padStart(2,"0");
+    }
+
+  }
+
+
+  prevBtn?.addEventListener("click", () => {
+
+    index =
+      (index - 1 + cards.length) %
+      cards.length;
+
+    renderWorks();
+
+  });
+
+
+  nextBtn?.addEventListener("click", () => {
+
+    index =
+      (index + 1) %
+      cards.length;
+
+    renderWorks();
+
+  });
+
+
+  renderWorks();
+
+});
+
+/* =========================================
+   REVIEWS — POINTER EFFECTS
+========================================= */
+
+(() => {
+
+  const section = document.querySelector(".reviews-section");
+
+  if (!section) return;
+
+  const canHover =
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  const reduceMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!canHover || reduceMotion) return;
+
+
+  section.addEventListener("pointerenter", () => {
+    section.classList.add("is-pointer-active");
+  });
+
+
+  section.addEventListener("pointermove", event => {
+
+    const rect = section.getBoundingClientRect();
+
+    section.style.setProperty(
+      "--review-x",
+      `${event.clientX - rect.left}px`
+    );
+
+    section.style.setProperty(
+      "--review-y",
+      `${event.clientY - rect.top}px`
+    );
+
+  });
+
+
+  section.addEventListener("pointerleave", () => {
+    section.classList.remove("is-pointer-active");
+  });
+
+
+  document
+    .querySelectorAll(".review-editorial-works")
+    .forEach(work => {
+
+      work.addEventListener("pointermove", event => {
+
+        const rect = work.getBoundingClientRect();
+
+        const x =
+          ((event.clientX - rect.left) / rect.width - .5) * 20;
+
+        const y =
+          ((event.clientY - rect.top) / rect.height - .5) * 16;
+
+
+        work.style.setProperty(
+          "--review-photo-x",
+          `${x}px`
+        );
+
+        work.style.setProperty(
+          "--review-photo-y",
+          `${y}px`
+        );
+
+      });
+
+
+      work.addEventListener("pointerleave", () => {
+
+        work.style.setProperty(
+          "--review-photo-x",
+          "0px"
+        );
+
+        work.style.setProperty(
+          "--review-photo-y",
+          "0px"
+        );
+
+      });
+
+    });
+
+})();
+
+/* =========================================
+   FAQ — POINTER EFFECT
+========================================= */
+
+(() => {
+
+  const section = document.querySelector(".faq-section");
+
+  if (!section) return;
+
+  const canHover =
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+  const reduceMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  if (!canHover || reduceMotion) return;
+
+
+  section.addEventListener("pointerenter", () => {
+    section.classList.add("is-pointer-active");
+  });
+
+
+  section.addEventListener("pointermove", event => {
+
+    const rect = section.getBoundingClientRect();
+
+    section.style.setProperty(
+      "--faq-x",
+      `${event.clientX - rect.left}px`
+    );
+
+    section.style.setProperty(
+      "--faq-y",
+      `${event.clientY - rect.top}px`
+    );
+
+  });
+
+
+  section.addEventListener("pointerleave", () => {
+    section.classList.remove("is-pointer-active");
+  });
+
+})();
+
+/* =========================================================
+   MOBILE SWIPE — WORKS + REVIEWS
+========================================================= */
+
+(() => {
+
+  const isTouch =
+    window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+  if (!isTouch) return;
+
+
+  function addSwipe(target, onSwipeLeft, onSwipeRight) {
+
+    if (!target) return;
+
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+
+    const threshold = 45;
+
+
+    target.addEventListener("touchstart", event => {
+
+      if (!event.touches.length) return;
+
+      startX = event.touches[0].clientX;
+      startY = event.touches[0].clientY;
+      currentX = startX;
+
+    }, { passive:true });
+
+
+    target.addEventListener("touchmove", event => {
+
+      if (!event.touches.length) return;
+
+      currentX = event.touches[0].clientX;
+
+    }, { passive:true });
+
+
+    target.addEventListener("touchend", event => {
+
+      const diffX = currentX - startX;
+
+      const endTouch = event.changedTouches[0];
+
+      const diffY =
+        endTouch.clientY - startY;
+
+
+      /* если человек скроллил страницу вверх/вниз —
+         свайп не срабатывает */
+      if (Math.abs(diffY) > Math.abs(diffX)) return;
+
+
+      if (Math.abs(diffX) < threshold) return;
+
+
+      if (diffX < 0) {
+        onSwipeLeft?.();
+      } else {
+        onSwipeRight?.();
+      }
+
+    });
+
+  }
+
+
+  /* ================= WORKS ================= */
+
+  document
+    .querySelectorAll("[data-works-slider]")
+    .forEach(slider => {
+
+      const windowEl =
+        slider.querySelector(".works-carousel-window");
+
+      const prev =
+        slider.querySelector(".works-prev");
+
+      const next =
+        slider.querySelector(".works-next");
+
+
+      addSwipe(
+        windowEl,
+        () => next?.click(),
+        () => prev?.click()
+      );
+
+    });
+
+
+  /* ================= REVIEWS ================= */
+
+  const reviewSlider =
+    document.querySelector(".review-slider");
+
+  const reviewPrev =
+    document.querySelector(".case-prev");
+
+  const reviewNext =
+    document.querySelector(".case-next");
+
+
+  addSwipe(
+    reviewSlider,
+    () => reviewNext?.click(),
+    () => reviewPrev?.click()
+  );
+
+})();
+
+/* =========================================================
+   MOBILE TAP FEEDBACK
+========================================================= */
+
+(() => {
+
+  const isTouch =
+    window.matchMedia("(hover: none), (pointer: coarse)").matches;
+
+  if (!isTouch) return;
+
+
+  const items = document.querySelectorAll(`
+    .hero-points > div,
+    .practice-step,
+    .after-card,
+    .mentor-principles > div,
+    .final-social
+  `);
+
+
+  items.forEach(item => {
+
+    item.addEventListener("touchstart", () => {
+      item.classList.add("is-touching");
+    }, { passive:true });
+
+
+    item.addEventListener("touchend", () => {
+
+      setTimeout(() => {
+        item.classList.remove("is-touching");
+      }, 160);
+
+    });
+
+  });
+
+})();
