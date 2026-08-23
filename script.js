@@ -258,7 +258,17 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
   link.addEventListener("click", e => {
     const href = link.getAttribute("href");
 
-    if (!href || href === "#") return;
+    // Не трогаем кнопки Telegram / Instagram
+    if (
+      link.classList.contains("js-book") ||
+      link.classList.contains("js-instagram") ||
+      link.classList.contains("js-studio")
+    ) {
+      return;
+    }
+
+    // Плавный скролл работает только для внутренних #ссылок
+    if (!href || href === "#" || !href.startsWith("#")) return;
 
     const target = document.querySelector(href);
 
@@ -268,11 +278,11 @@ document.querySelectorAll('a[href^="#"]').forEach(link => {
 
     const headerHeight = header?.offsetHeight || 0;
 
-const targetTop =
-  target.getBoundingClientRect().top +
-  window.scrollY -
-  headerHeight +
-  4;
+    const targetTop =
+      target.getBoundingClientRect().top +
+      window.scrollY -
+      headerHeight +
+      4;
 
     window.scrollTo({
       top: targetTop,
